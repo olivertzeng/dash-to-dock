@@ -411,7 +411,7 @@ const DockedDash = new Lang.Class({
 
         // Set initial position
         this._resetDepth();
-        this._resetPosition();
+//        this._resetPosition();
     },
 
     _initialize: function() {
