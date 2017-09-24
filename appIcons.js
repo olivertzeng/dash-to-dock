@@ -1162,9 +1162,16 @@ var MyAppIcon = new Lang.Class({
         if (activate && this._numberOverlayOrder > -1) {
             this.updateNumberOverlay();
             this._numberOverlayBin.show();
+
+            // Hide the notification badge to avoid collision
+            this.toggleNotificationBadge(false);
         }
-        else
+        else {
             this._numberOverlayBin.hide();
+
+            // Reset the notification badge if necessary
+            this.toggleNotificationBadge(true);
+	}
     },
 
     _minimizeWindow: function(param) {
