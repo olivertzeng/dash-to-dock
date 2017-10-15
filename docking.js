@@ -1056,16 +1056,21 @@ const DockedDash = new Lang.Class({
 
         let anchor_point;
 
+        // We add a small shift in the actor position (smaller than 1) to make
+        // sure that the layoutManager find the appropriate monitor for the
+        // actor. See findIndexForActor() in layout.js.
+        let subPixelShift = 0.2;
+
         if (this._isHorizontal) {
             this.actor.width = Math.round( fraction * workArea.width);
 
             let pos_y;
             if (this._position == St.Side.BOTTOM) {
-                pos_y =  this._monitor.y + this._monitor.height;
+                pos_y = this._monitor.y + this._monitor.height - subPixelShift;
                 anchor_point = Clutter.Gravity.SOUTH_WEST;
             }
             else {
-                pos_y = this._monitor.y;
+                pos_y = this._monitor.y + subPixelShift;
                 anchor_point = Clutter.Gravity.NORTH_WEST;
             }
 
@@ -1087,11 +1092,11 @@ const DockedDash = new Lang.Class({
 
             let pos_x;
             if (this._position == St.Side.RIGHT) {
-                pos_x =  this._monitor.x + this._monitor.width;
+                pos_x = this._monitor.x + this._monitor.width - subPixelShift;
                 anchor_point = Clutter.Gravity.NORTH_EAST;
             }
             else {
-                pos_x =  this._monitor.x;
+                pos_x = this._monitor.x + subPixelShift;
                 anchor_point = Clutter.Gravity.NORTH_WEST;
             }
 
