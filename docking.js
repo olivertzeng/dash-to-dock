@@ -85,6 +85,7 @@ const DashSlideContainer = new Lang.Class({
         }
 
         this.actor = new Shell.GenericContainer(params);
+        this.actor.set_name('slidername');
         this.actor.connect('get-preferred-width', Lang.bind(this, this._getPreferredWidth));
         this.actor.connect('get-preferred-height', Lang.bind(this, this._getPreferredHeight));
         this.actor.connect('allocate', Lang.bind(this, this._allocate));
@@ -360,6 +361,13 @@ const DockedDash = new Lang.Class({
         ]);
 
         this._injectionsHandler = new Utils.InjectionsHandler();
+        this._injectionsHandler.addWithLabel('regions', [
+            LayoutManager,
+            'findIndexForActor',
+            findIndexForActor
+        ]);
+
+
         this._themeManager = new Theming.ThemeManager(this._settings, this);
 
         // Since the actor is not a topLevel child and its parent is now not added to the Chrome,
@@ -1950,3 +1958,15 @@ var DockManager = new Lang.Class({
     }
 });
 Signals.addSignalMethods(DockManager.prototype);
+
+function findIndexForActor (actor) {
+    let [x, y] = actor.get_transformed_position();
+    let [w, h] = actor.get_transformed_size();
+    let rect = new Meta.Rectangle({ x: x, y: y, width: w, height: h });
+    if (actor.get_name() == 'slidername') {
+        global.log('x,y:  ' + x + ',' + y);
+        global.log('w,h:  ' + w + ',' + h);
+        global.log('iMon: ' + global.screen.get_monitor_index_for_rect(rect))
+    }
+    return global.screen.get_monitor_index_for_rect(rect);
+}
