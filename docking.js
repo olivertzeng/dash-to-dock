@@ -22,6 +22,7 @@ const ViewSelector = imports.ui.viewSelector;
 const WorkspaceSwitcherPopup= imports.ui.workspaceSwitcherPopup;
 const Layout = imports.ui.layout;
 const LayoutManager = imports.ui.main.layoutManager;
+const WorkspacesView = imports.ui.workspacesView;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
@@ -1681,6 +1682,10 @@ var DockManager = new Lang.Class({
         // applications button.
         this._forcedOverview = false;
 
+        // If the dock is shown on other screens than the primary one, we need
+        // to adjust the geometry
+        this._updateWSViewGeometry();
+
         // Connect relevant signals to the toggling function
         this._bindSettingsChanges();
     },
@@ -1790,6 +1795,71 @@ var DockManager = new Lang.Class({
         // actors has this effect, i.e in horizontal mode and without the workspaceThumnails
         // 1 static workspace only)
         Main.overview._controls.dash.actor.set_width(1);
+    },
+
+    _updateWSViewGeometry: function() {
+        // If the dock is shown on other screens than the primary one, we need
+        // to adjust the geometry.
+        let workspacesDisplay = Main.overview._controls.viewSelector._workspacesDisplay;
+        let dockManager = this;
+
+        this._injectionsHandler = new Utils.InjectionsHandler();
+        this._injectionsHandler.addWithLabel('workspacesDisplay', [
+            // Due to some WorkspacesView's objects being alredy instantiated,
+            // it seems we need to create a dummy copy of the function, and
+            // empty the original one. This is done in these two injections:
+            WorkspacesView.WorkspacesViewBase.prototype,
+            'setMyActualGeometry',
+            function (geom) {
+                this._actualGeometry = geom;
+                this._syncActualGeometry();
+            }
+        ], [
+            WorkspacesView.WorkspacesViewBase.prototype,
+            'setActualGeometry',
+            function (geom) {
+                return;
+            }
+        ], [
+            // This function is taken from the upstream WorkspacesView.js file. The
+            // only change is the adjustment in geometry when i != primaryIndex.
+            workspacesDisplay,
+            '_updateWorkspacesActualGeometry',
+            Lang.bind(workspacesDisplay, function () {
+                if (!this._workspacesViews.length)
+                    return;
+
+                let [x, y] = this.actor.get_transformed_position();
+                let allocation = this.actor.allocation;
+                let width = allocation.x2 - allocation.x1;
+                let height = allocation.y2 - allocation.y1;
+                let primaryGeometry = { x: x, y: y, width: width, height: height };
+
+                let monitors = Main.layoutManager.monitors;
+                let position = Utils.getPosition(dockManager._settings);
+                let horizontal = position == St.Side.TOP || position == St.Side.BOTTOM;
+                let dockWidth = dockManager._allDocks[0].dash._container.width;
+                let dockHeight = dockManager._allDocks[0].dash._container.height;
+                for (let i = 0; i < monitors.length; i++) {
+                    let geometry;
+                    if (i == this._primaryIndex)
+                        geometry = primaryGeometry;
+                    else if (
+                        dockManager._settings.get_boolean('multi-monitor') ||
+                        (dockManager._allDocks[0] && dockManager._allDocks[0]._monitorIndex == i)
+                    ) {
+                        let i_x = monitors[i].x + dockWidth * (position == St.Side.LEFT);
+                        let i_y = monitors[i].y + dockHeight * (position == St.Side.TOP);
+                        let i_w = monitors[i].width - dockWidth * (!horizontal);
+                        let i_h = monitors[i].height - dockHeight * (horizontal);
+                        geometry = { x: i_x, y: i_y, width: i_w, height: i_h };
+                    } else {
+                        geometry = monitors[i];
+                    }
+                    this._workspacesViews[i].setMyActualGeometry(geometry);
+                }
+            })
+        ]);
     },
 
     _deleteDocks: function() {
@@ -1919,6 +1989,7 @@ var DockManager = new Lang.Class({
 
     destroy: function() {
         this._signalsHandler.destroy();
+        this._injectionsHandler.destroy();
         this._deleteDocks();
         this._revertPanelCorners();
         this._restoreDash();
