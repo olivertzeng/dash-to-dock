@@ -46,6 +46,8 @@ const scrollAction = {
     SWITCH_WORKSPACE: 2
 };
 
+let lock_screen = false;
+
 /**
  * A simple St.Widget with one child whose allocation takes into account the
  * slide out of its child via the _slidex parameter ([0:1]).
@@ -1111,6 +1113,10 @@ const DockedDash = new Lang.Class({
 
     // Set the dash at the correct depth in z
     _resetDepth: function() {
+        if (lock_screen) {
+            Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, null);
+            return;
+        }
         // Keep the dash below the modalDialogGroup and the legacyTray
         if (Main.legacyTray && Main.legacyTray.actor)
             Main.layoutManager.uiGroup.set_child_below_sibling(this.actor, Main.legacyTray.actor);
@@ -1170,7 +1176,7 @@ const DockedDash = new Lang.Class({
     _onDragStart: function() {
         // The dash need to be above the top_window_group, otherwise it doesn't
         // accept dnd of app icons when not in overiew mode.
-        Main.layoutManager.uiGroup.set_child_above_sibling(this.actor, global.top_window_group);
+        Main.layoutManager.uiGroup.set_child_above_sibling(this.actor, lock_screen ? null : global.top_window_group);
         this._oldignoreHover = this._ignoreHover;
         this._ignoreHover = true;
         this._animateIn(this._settings.get_double('animation-time'), 0);
@@ -1896,6 +1902,27 @@ var DockManager = new Lang.Class({
         this._revertPanelCorners();
         this._restoreDash();
         this._remoteModel.destroy();
+    },
+
+    /**
+     * These functions simply hide/show the dock, so that it doesn't show on the
+     * lockscreen. The idea is to *not* disable the extension, but simply hide
+     * it. This wasy, there is no need to re-enable it upon unlocking the screen.
+     */
+    disable: function() {
+        for (var dock of this._allDocks) {
+            dock._themeManager._transparency.disable();
+            lock_screen = true;
+            dock._resetDepth();
+        }
+    },
+
+    enable: function() {
+        for (var dock of this._allDocks) {
+            dock._themeManager._transparency.enable();
+            lock_screen = false;
+            dock._resetDepth();
+        }
     },
 
     /**

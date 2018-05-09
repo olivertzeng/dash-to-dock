@@ -8,16 +8,22 @@ const Convenience = Me.imports.convenience;
 // GNOME Shell 3.26+ (mozjs52+).
 var dockManager;
 
+let enabled = false;
+
 function init() {
     Convenience.initTranslations('dashtodock');
 }
 
 function enable() {
-    dockManager = new Docking.DockManager();
+    if (!enabled) {
+        dockManager = new Docking.DockManager();
+        enabled = true;
+    }
+    else {
+        dockManager.enable();
+    }
 }
 
 function disable() {
-    dockManager.destroy();
-
-    dockManager=null;
+    dockManager.disable();
 }
