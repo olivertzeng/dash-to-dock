@@ -7,7 +7,7 @@ const ExtensionSystem = imports.ui.extensionSystem;
 
 // We declare this with var so it can be accessed by other extensions in
 // GNOME Shell 3.26+ (mozjs52+).
-var dockManager;
+var dockManager = null;
 
 
 let _extensionlistenerId;
@@ -21,16 +21,15 @@ function enable() {
      * Listen to enabled extension, if Dash to Dock is on the list or become active,
      * we disable this dock.
      */
-    dockManager=null; // even if declared, we need to initialize it to not trigger a referenceError.
     _extensionlistenerId = ExtensionSystem.connect('extension-state-changed',
                                                    conditionallyenabledock);
     conditionallyenabledock();
 }
 
 function disable() {
-    dockManager.destroy();
-
-    dockManager=null;
+    if (dockManager) {
+        dockManager.disable();
+    }
 
     if (_extensionlistenerId) {
         ExtensionSystem.disconnect(_extensionlistenerId);
@@ -50,6 +49,8 @@ function conditionallyenabledock() {
     // enable or disable dock depending on dock status and to_enable state
     if (to_enable && !dockManager) {
         dockManager = new Docking.DockManager();
+    } else if (to_enable && dockManager) {
+        dockManager.enable();
     } else if (!to_enable && dockManager) {
         dockManager.destroy();
         dockManager = null;
