@@ -42,6 +42,9 @@ const TransparencyMode = {
     DYNAMIC:  3
 };
 
+
+var lockscreen = false;
+
 /**
  * Manage theme customization and custom theme support
  */
@@ -448,7 +451,7 @@ const Transparency = new Lang.Class({
         let isNear = this._dockIsNear() || this._panelIsNear();
         if (isNear) {
             this._actor.set_style(this._opaque_style);
-            if (this._panel._updateSolidStyle && this._adaptiveEnabled) {
+            if (this._panel._updateSolidStyle && this._adaptiveEnabled && !lockscreen) {
                 if (this._settings.get_boolean('dock-fixed') || this._panelIsNear())
                     this._panel._addStyleClassName('solid');
                 else
@@ -457,7 +460,7 @@ const Transparency = new Lang.Class({
         }
         else {
             this._actor.set_style(this._transparent_style);
-            if (this._panel._updateSolidStyle && this._adaptiveEnabled)
+            if (this._panel._updateSolidStyle && this._adaptiveEnabled && !lockscreen)
                 this._panel._removeStyleClassName('solid');
         }
 
@@ -604,7 +607,7 @@ const Transparency = new Lang.Class({
         }
 
         if (this._settings.get_enum('transparency-mode') === TransparencyMode.ADAPTIVE &&
-            this._panel._updateSolidStyle) {
+            this._panel._updateSolidStyle && !lockscreen) {
             themeNode = this._panel.actor.get_theme_node();
             if (this._panel.actor.has_style_class_name('solid')) {
                 this._opaqueTransition = themeNode.get_transition_duration();
