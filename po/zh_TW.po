@@ -36,7 +36,7 @@ msgstr "左側"
 
 #: prefs.js:232
 msgid "Intelligent autohide customization"
-msgstr "智慧型自動隱藏自訂"
+msgstr "自訂自動隱藏"
 
 #: prefs.js:239 prefs.js:424 prefs.js:481
 msgid "Reset to defaults"
@@ -56,7 +56,7 @@ msgstr "自訂執行中指示器"
 
 #: prefs.js:671
 msgid "Cutomize opacity"
-msgstr "自訂不透明度"
+msgstr "自訂透明度"
 
 #: appIcons.js:785
 msgid "All Windows"
@@ -187,7 +187,7 @@ msgstr "Dock 大小限制"
 
 #: Settings.ui.h:31
 msgid "Panel mode: extend to the screen edge"
-msgstr "面板模式：延伸到螢幕邊緣"
+msgstr "控制板模式：延伸到螢幕邊緣"
 
 #: Settings.ui.h:32
 msgid "Icon size limit"
@@ -215,11 +215,11 @@ msgstr "獨立工作區。"
 
 #: Settings.ui.h:38
 msgid "Isolate monitors."
-msgstr "分離顯示器。"
+msgstr "獨立顯示器。"
 
 #: Settings.ui.h:39
 msgid "Show open windows previews."
-msgstr "顯示開啟視窗的預覽。"
+msgstr "顯示預覽視窗。"
 
 #: Settings.ui.h:40
 msgid ""
@@ -358,11 +358,11 @@ msgstr "自訂不透明性"
 
 #: Settings.ui.h:72
 msgid "Fixed"
-msgstr "Fixed"
+msgstr "固定"
 
 #: Settings.ui.h:73
 msgid "Adaptive"
-msgstr "自適應"
+msgstr "智能"
 
 #: Settings.ui.h:74
 msgid "Dynamic"
@@ -370,11 +370,11 @@ msgstr "動態"
 
 #: Settings.ui.h:75
 msgid "Opacity"
-msgstr "不透明"
+msgstr "透明度"
 
 #: Settings.ui.h:76
 msgid "Force straight corner\n"
-msgstr "強迫角落直角\n"
+msgstr "邊緣直角\n"
 
 #: Settings.ui.h:78
 msgid "Appearance"
@@ -412,15 +412,15 @@ msgstr "關於"
 
 #: Settings.ui.h:86
 msgid "Customize minimum and maximum opacity values"
-msgstr "自訂最低與最高不透明值"
+msgstr "自訂最低與最高透明度"
 
 #: Settings.ui.h:87
 msgid "Minimum opacity"
-msgstr "最小化不透明度"
+msgstr "最小化透明度"
 
 #: Settings.ui.h:88
 msgid "Maximum opacity"
-msgstr "最大化不透明度"
+msgstr "最大化透明度"
 
 #: Settings.ui.h:89
 msgid "Number overlay"
@@ -430,7 +430,7 @@ msgstr "數字覆層"
 msgid ""
 "Temporarily show the application numbers over the icons, corresponding to "
 "the shortcut."
-msgstr "暫時顯示應用程式數目在圖示上，可對應到快捷鍵。"
+msgstr "暫時顯示應用程式編號在圖示上，可對應到快捷鍵。"
 
 #: Settings.ui.h:91
 msgid "Show the dock if it is hidden"
@@ -500,7 +500,7 @@ msgstr "顯示等候秒數"
 
 #: Settings.ui.h:107
 msgid "Pressure threshold"
-msgstr "壓力閾值"
+msgstr "壓力值"
 
 #~ msgid "Show a dot for each windows of the application."
 #~ msgstr "為應用程式的每個視窗顯示圓點。"
